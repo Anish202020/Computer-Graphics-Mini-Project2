@@ -58,4 +58,11 @@ This documentation provides the necessary steps to set up and run a real-time em
     - Emotions are detected in the frame using the FER library.
     - For each detected face, a rectangle is drawn around the face, and the dominant emotion is displayed on the frame.
 - **Exit Condition**: Pressing the 'q' key will exit the loop and release the webcam resources.
+## Team Members
+Anish Kumar 1AY21CS028
 
+Aditya Arun Kumar 1AY21CS016
+
+Aditya Jyoti Sahu 1AY21CS017
+
+Aditya Kshatriya 1AY21CS018
