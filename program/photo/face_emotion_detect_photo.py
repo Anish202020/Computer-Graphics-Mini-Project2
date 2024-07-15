@@ -3,7 +3,7 @@ from fer import FER
 import cv2
 
 # Load the image
-image_path = 'photo_emotions2.jpeg'
+image_path = 'photo_emotions.jpg'
 image = cv2.imread(image_path)
 
 # Convert the image to RGB (required by fer library)

@@ -1,18 +1,35 @@
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import streamlit as st
 import cv2
 from fer import FER
 import numpy as np
-# from datetime import datetime
+import uuid  # Import UUID library to generate unique keys
 
 # Initialize the FER emotion detector with MTCNN for face detection
-detector = FER(mtcnn=True)
+try:
+    detector = FER(mtcnn=True)
+except Exception as e:
+    st.error("Error initializing FER with MTCNN: {}".format(e))
+    st.stop()
+
+# Streamlit app setup
+st.title('Real-time Emotion Detection')
+st.write('This application detects faces and their emotions in real-time using your webcam.')
+st.subheader('Team Members')
+st.write('ANISH KUMAR 1AY21CS028')
+st.write('ADITYA KHATRIYA 1AY21CS018')
+st.write('ADITYA JYOTI SAHU 1AY21CS017')
+st.write('ADITYA ARUN KUMAR 1AY21CS016')
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
+if not cap.isOpened():
+    st.error("Error: Could not open webcam.")
+    st.stop()
 
+# Function to draw text with background
 def draw_text(frame, text, x, y):
-    """Draw text with background."""
     font_scale = 0.6
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_thickness = 2
@@ -22,38 +39,34 @@ def draw_text(frame, text, x, y):
     cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (0, 0, 0), cv2.FILLED)
     cv2.putText(frame, text, (text_x, y), font, font_scale, (255, 255, 255), font_thickness)
 
+# Streamlit video capture and processing
+frame_window = st.image([])
+
+
+
 while True:
-    # Capture frame-by-frame
     ret, frame = cap.read()
     if not ret:
+        st.error("Error: Could not read frame from webcam.")
         break
 
-    # Convert the image to RGB (FER library requires RGB images)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # Detect emotions in the frame
     result = detector.detect_emotions(rgb_frame)
 
-    # Loop through detected faces
     for face in result:
         (x, y, w, h) = face['box']
-        # Draw rectangle around the face
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-        # Get the dominant emotion
         dominant_emotion = max(face['emotions'], key=face['emotions'].get)
         score = face['emotions'][dominant_emotion]
 
-        # Display the emotion on the frame
         draw_text(frame, f'{dominant_emotion} ({score:.2f})', x, y - 10)
 
-    # Display the resulting frame
-    cv2.imshow('Emotion Recognition', frame)
+    frame_window.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-    # Press 'q' to quit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    # Generate a unique key for each button instance using UUID
+   
+   
 
-# Release the webcam and close windows
 cap.release()
-cv2.destroyAllWindows()
